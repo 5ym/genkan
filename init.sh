@@ -1,7 +1,7 @@
 #!/bin/sh
+set -e
 
-git clone https://github.com/5ym/Local-Dev-Traefik.git docker
-cd docker
-cp compose.sample.yml compose.yml
-cp traefik.sample.yml traefik.yml
+mkdir -p local-dev-proxy
+cd local-dev-proxy
+curl -fsSO https://raw.githubusercontent.com/5ym/local-dev-proxy/main/compose.yml
 docker compose up -d

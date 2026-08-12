@@ -1,9 +1,0 @@
-entryPoints:
-  web:
-    address: ':80'
-  websecure:
-    address: ':443'
-providers:
-  docker:
-    network: docker_default
-    defaultRule: 'Host(`{{ trimSuffix "-" (regexFind "(.+?)-" .Name) }}.localhost`)'
