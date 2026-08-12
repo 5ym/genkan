@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-if [ -d local-dev-proxy/.git ]; then
-	cd local-dev-proxy
+if [ -d genkan/.git ]; then
+	cd genkan
 	git pull --ff-only
 else
-	git clone https://github.com/5ym/local-dev-proxy.git
-	cd local-dev-proxy
+	git clone https://github.com/5ym/genkan.git
+	cd genkan
 fi
 docker compose up -d
