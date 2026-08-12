@@ -11,13 +11,13 @@
 ## 使い方
 
 ```sh
-curl -sf https://raw.githubusercontent.com/5ym/genkan/main/init.sh | sh -s
+curl -sf https://raw.githubusercontent.com/danything/genkan/main/init.sh | sh -s
 ```
 
 初回はこのリポジトリをクローンして起動し、2回目以降は `git pull` で変更に追従してから再適用します。手動なら:
 
 ```sh
-git clone https://github.com/5ym/genkan.git
+git clone https://github.com/danything/genkan.git
 cd genkan
 docker compose up -d
 ```

@@ -11,13 +11,13 @@ For local development, `*.localhost` works out of the box (no DNS setup). Point 
 ## How to use
 
 ```sh
-curl -sf https://raw.githubusercontent.com/5ym/genkan/main/init.sh | sh -s
+curl -sf https://raw.githubusercontent.com/danything/genkan/main/init.sh | sh -s
 ```
 
 On first run it clones this repository and starts the proxy; on subsequent runs it pulls the latest changes and re-applies them. Or manually:
 
 ```sh
-git clone https://github.com/5ym/genkan.git
+git clone https://github.com/danything/genkan.git
 cd genkan
 docker compose up -d
 ```
