@@ -1,22 +1,32 @@
 # local-dev-proxy
 
-## Description
+[English](./README.en.md)
 
-A single-file reverse proxy for local development, so you never have to manage published ports per project.
+## 概要
 
-One shared [caddy-docker-proxy](https://github.com/lucaslorentz/caddy-docker-proxy) container listens on ports 80/443 and routes `*.localhost` hostnames to your containers. There are no config files to maintain — the infrastructure side is just this `compose.yml`, and each project opts in explicitly with two labels. Nothing is exposed automatically.
+ローカル開発用のリバースプロキシです。プロジェクトごとのポート管理・ポート競合をなくします。
 
-## How to use
+共有の [caddy-docker-proxy](https://github.com/lucaslorentz/caddy-docker-proxy) コンテナが80/443番ポートで待ち受け、`*.localhost` のホスト名を各コンテナにルーティングします。インフラ側の設定はこのリポジトリの `compose.yml` 1枚だけで、設定ファイルの管理は不要です。各プロジェクトはラベルで明示的にオプトインします（コンテナ名からの自動公開はしません）。
+
+## 使い方
 
 ```sh
 curl -sf https://raw.githubusercontent.com/5ym/local-dev-proxy/main/init.sh | sh -s
 ```
 
-Or manually: download `compose.yml` and run `docker compose up -d`.
+初回はこのリポジトリをクローンして起動し、2回目以降は `git pull` で `compose.yml` の変更に追従してから再適用します。手動でやる場合:
 
-## Adding a project
+```sh
+git clone https://github.com/5ym/local-dev-proxy.git
+cd local-dev-proxy
+docker compose up -d
+```
 
-Add two labels and join the `proxy` network. The hostname and upstream port are declared explicitly in each project — nothing is guessed from container names.
+更新するときはもう一度 `init.sh` を実行するか、クローン先で `git pull && docker compose up -d` してください。
+
+## プロジェクトの追加
+
+ラベルを2行追加して `proxy` ネットワークに参加させるだけです。ホスト名と転送先ポートは各プロジェクト側に明示的に書きます。
 
 ```yml
 services:
@@ -31,18 +41,22 @@ networks:
     external: true
 ```
 
-Then open http://myapp.localhost — `*.localhost` resolves to loopback in modern browsers, so no DNS setup is needed. Do not publish the port in the project's compose file; the proxy reaches the container over the shared network, which is what makes port conflicts impossible.
+- `{{upstreams 5173}}` は「このコンテナ自身のIP:5173」に展開されます。ポート番号は**コンテナ内でアプリが待ち受けているポート**を必ず指定してください（`EXPOSE` からの自動検出はありません）
+- プロジェクト側で `ports:` を公開しないでください。プロキシは共有ネットワーク経由でコンテナに到達するので、公開しないことがポート競合をなくす仕組みそのものです
+- `*.localhost` はモダンブラウザがループバックに解決するので、DNSやhostsの設定は不要です
+
+追加したら http://myapp.localhost を開くだけです（自動的にHTTPSへリダイレクトされます）。
 
 ## HTTPS
 
-Caddy issues certificates for `*.localhost` from its internal CA automatically, so https://myapp.localhost works out of the box. To avoid browser warnings, trust Caddy's root certificate once:
+Caddyが内部CAで `*.localhost` の証明書を自動発行するので、https://myapp.localhost がそのまま使えます。ブラウザの警告を消したい場合はCaddyのルート証明書を一度だけ信頼させてください:
 
 ```sh
 docker compose cp proxy:/data/caddy/pki/authorities/local/root.crt .
 ```
 
-Then install `root.crt` into your OS/browser trust store. Plain `http://` works without any of this (and `localhost` is already a secure context).
+取り出した `root.crt` をOS・ブラウザの信頼ストアに登録します。警告を許容するなら何もしなくても動きます。
 
-## Other functions
+## その他の機能
 
-It comes with [Portainer](https://www.portainer.io), a tool for managing Docker via web UI, available at http://portainer.localhost.
+DockerをWeb UIで管理できる [Portainer](https://www.portainer.io) が同梱されており、http://portainer.localhost からアクセスできます。
